@@ -2,10 +2,12 @@ package games.strategy.ui;
 
 import games.strategy.engine.framework.system.SystemProperties;
 import games.strategy.triplea.EngineImageLoader;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -107,6 +109,7 @@ public class ScrollableTextField extends JPanel {
           }
         };
     minButton.addActionListener(minAction);
+    setButtonSize(upButton, downButton, maxButton, minButton);
     final JPanel upDown = new JPanel();
     upDown.setLayout(new BoxLayout(upDown, BoxLayout.Y_AXIS));
     upDown.add(upButton);
@@ -120,6 +123,23 @@ public class ScrollableTextField extends JPanel {
     final IntTextFieldChangeListener textListener = field -> notifyListeners();
     text.addChangeListener(textListener);
     setWidgetActivation();
+  }
+
+  private static void setButtonSize(final JButton... buttons) {
+    final var buttonSize =
+        Arrays.stream(buttons)
+            .map(JButton::getPreferredSize)
+            .reduce(
+                new Dimension(),
+                (maximum, size) ->
+                    new Dimension(
+                        Math.max(maximum.width, size.width),
+                        Math.max(maximum.height, size.height)));
+    for (final JButton button : buttons) {
+      button.setMinimumSize(buttonSize);
+      button.setPreferredSize(buttonSize);
+      button.setMaximumSize(buttonSize);
+    }
   }
 
   private static synchronized void loadImages() {
